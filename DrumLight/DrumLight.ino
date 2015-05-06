@@ -1,9 +1,3 @@
-#include <MIDI.h>
-#include <midi_Defs.h>
-#include <midi_Message.h>
-#include <midi_Namespace.h>
-#include <midi_Settings.h>
-
 #include <CapacitiveSensor.h>
 
 // LED / Bare Paint CapSense DrumLight
@@ -12,8 +6,9 @@
 /* Declarations and Initializations */
 int ledPin1 = 9;
 int ledPin2 = 11;
-const long MAX_INPUT = 1500; //Approximate max from proximity sensing, not touch
-const long MIN_INPUT = 300;
+// Max and Min inputs calibrated for two 10Megaogm resistors in series
+const long MAX_INPUT = 20000; //Approximate max from proximity sensing, not touch
+const long MIN_INPUT = 650;
 long input;
 
 int debugCount;
@@ -29,7 +24,6 @@ void setup()
   pinMode(ledPin1, OUTPUT);
   pinMode(ledPin2, OUTPUT);
   
-//  MIDI.begin();
   Serial.begin(9600);
   
   debugCount = 0;
@@ -42,7 +36,10 @@ void loop()
   
   if (debugCount % 50 == 0) //For serial debugging
   {
-    Serial.println(input); 
+    Serial.println("  input: ");
+    Serial.println(input);
+    Serial.println("  brightness: ");
+    Serial.println(convertToBrightness(input, MAX_INPUT));
   }
   
   if (input <= MIN_INPUT)
@@ -69,7 +66,7 @@ void loop()
 /* Functions */
 int convertToBrightness(long input, long maxInput)
 {
- int newBrightness = (input * 255) / maxInput;
+ int newBrightness = input * 255 / maxInput;
  return newBrightness;
 }
 
